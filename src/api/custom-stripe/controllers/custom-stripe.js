@@ -1,18 +1,11 @@
 'use strict';
 
-/**
- * custom-stripe controller
- */
-
-const { createCoreController } = require('@strapi/strapi').factories;
 const Stripe = require('stripe');
 
-// Initialize Stripe with your Secret Key (Environmental variable recommended in prod)
-// We use a placeholder here or process.env.STRIPE_SK
+// Initialize Stripe
 const stripe = new Stripe(process.env.STRIPE_SK || 'sk_test_placeholder');
 
-module.exports = createCoreController('api::custom-stripe.custom-stripe', ({ strapi }) => ({
-
+module.exports = {
     /**
      * Endpoint to process a donation/payment
      * POST /api/custom-stripes/charge
@@ -21,20 +14,17 @@ module.exports = createCoreController('api::custom-stripe.custom-stripe', ({ str
         try {
             const { amount, token, currency } = ctx.request.body;
 
-            // 1. Validaciones básicas
             if (!amount || !token) {
                 return ctx.badRequest('Amount and Token are required');
             }
 
-            // 2. Intentar crear el cargo/Charge
             const charge = await stripe.charges.create({
-                amount: Math.round(amount * 100), // En centavos
+                amount: Math.round(amount * 100),
                 currency: currency || 'usd',
-                source: token, // Token pm_... o tok_...
+                source: token,
                 description: 'Strapi Checker Test Charge',
             });
 
-            // 3. Respuesta Exitosa (Live)
             return ctx.send({
                 status: 'success',
                 message: 'Payment processed successfully',
@@ -44,7 +34,6 @@ module.exports = createCoreController('api::custom-stripe.custom-stripe', ({ str
             });
 
         } catch (err) {
-            // 4. Manejo de Errores (Dead / Decline)
             return ctx.badRequest('Payment Failed', {
                 error: err.message,
                 code: err.code,
@@ -63,5 +52,4 @@ module.exports = createCoreController('api::custom-stripe.custom-stripe', ({ str
             mode: process.env.NODE_ENV
         });
     }
-
-}));
+};
