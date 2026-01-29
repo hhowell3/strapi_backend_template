@@ -1,8 +1,12 @@
-module.exports = ({ env }) => ({
-    upload: {
-        config: {
-            provider: 'local',
-            sizeLimit: 100000,
-        },
-    },
-});
+module.exports = [
+    'strapi::errors',
+    'strapi::security',
+    'strapi::cors',
+    'strapi::poweredBy',
+    'strapi::logger',
+    'strapi::query',
+    'strapi::body',
+    'strapi::session',
+    'strapi::favicon',
+    'strapi::public',
+];
